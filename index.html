@@ -158,11 +158,61 @@ section:nth-child(even){background:var(--bg2)}
 .yb.active{background:var(--accent);color:#05111f;border-color:var(--accent);font-weight:600}
 .pub-count{font-family:var(--mono);font-size:.72rem;color:var(--muted);align-self:center;white-space:nowrap}
 .pub-list{display:flex;flex-direction:column;gap:.9rem}
-.pub-item{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.5rem;display:grid;grid-template-columns:62px 1fr;gap:1.2rem;align-items:start;transition:all .25s}
-.pub-item:hover{border-color:var(--border);box-shadow:0 4px 20px rgba(0,0,0,.3)}
-.pub-thumb {width: 62px;height: 62px;display: flex;align-items: center;justify-content: center}
-.pub-thumbnail {width: 100%;height: auto;max-height: 62px;object-fit: cover;border-radius: 6px;border: 1px solid var(--border2);background: var(--surface)}
-.yr-badge {display: inline-block;margin-right: 0.6rem;vertical-align: middle}
+.pub-item {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 1.2rem 1.5rem;
+  display: grid;
+  grid-template-columns: 120px 1fr;   /* ← larger image column */
+  gap: 1.5rem;
+  align-items: start;
+  transition: all .25s;
+}
+.pub-thumb {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pub-thumbnail {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  transition: transform 0.2s;
+}
+.pub-item:hover .pub-thumbnail {
+  transform: scale(1.02);
+}
+.yr-badge {
+  font-family: var(--mono);
+  font-size: .75rem;
+  font-weight: 600;
+  background: rgba(0,212,165,.12);
+  color: var(--accent);
+  border: 1px solid rgba(0,212,165,.28);
+  border-radius: 6px;
+  padding: .3rem .7rem;
+  white-space: nowrap;
+  display: inline-block;
+  margin-right: 0.8rem;
+}
+
+/* Responsive: on narrow screens, keep the image above text */
+@media (max-width: 600px) {
+  .pub-item {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  .pub-thumb {
+    max-width: 180px;
+    margin-bottom: 0.25rem;
+  }
+}
 .pub-title{font-weight:600;font-size:.93rem;margin-bottom:.32rem;line-height:1.4;color:var(--heading)}
 .pub-authors{font-size:.78rem;color:var(--muted);margin-bottom:.3rem;font-style:italic}
 .pub-journal{font-family:var(--mono);font-size:.72rem;color:var(--accent2);margin-bottom:.55rem}
@@ -491,19 +541,19 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
       </div>
       <div class="db-card reveal">
         <div class="db-icon">🧪</div>
+        <div class="db-name">Toluene/Water Partition Coefficient Database</div>        
         <img src="images/databases/toluene.png"
                alt="toluene"
                class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
-        <div class="db-name">Toluene/Water Partition Coefficient Database</div>
         <div class="db-desc">252 unique molecules with experimentally determined toluene/water partition coefficients. A valuable descriptor for studying intramolecular hydrogen bonds and chameleon-like properties that modulate solubility and permeability in drugs.</div>
         <a href="https://doi.org/10.5281/zenodo.7884698" target="_blank" class="db-link">Access Dataset ↗</a>
       </div>
       <div class="db-card reveal">
+        <div class="db-name">n-Octanol/Water Partition &amp; Distribution Coefficients</div>        
         <div class="db-icon">📊</div>
         <img src="images/databases/lip profiles.png"
                alt="naprore-cr"
                class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
-        <div class="db-name">n-Octanol/Water Partition &amp; Distribution Coefficients</div>
         <div class="db-desc">Critical compilation of experimental logPN, pKa, logPI, and logDpH values for 225 entries from literature. Experimental techniques thoroughly revised; molecules classified as acids and bases by functional groups and pKa values.</div>
         <a href="https://doi.org/10.5281/zenodo.13208946" target="_blank" class="db-link">Access Dataset ↗</a>
       </div>
@@ -515,10 +565,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
       </div>
       <div class="db-card reveal">
         <div class="db-icon">🔬</div>
+        <div class="db-name">SolCbio3Database</div>      
         <img src="images/databases/GSE.png"
                alt="naprore-cr"
                class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
-        <div class="db-name">SolCbio3Database</div>
         <div class="db-desc">Open database of experimentally determined intrinsic solubility (logS in mol/L), melting point (°C), and neutral octanol-water partition (logPN) for organic molecules. Includes General Solubility Equation calculations and absolute errors vs. experimental values, with full literature references.</div>
         <a href="https://zenodo.org/records/18624099" target="_blank" class="db-link">Access Dataset ↗</a>
       </div>
