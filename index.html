@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBio3 Lab | Computational Biophysics, Biology &amp; Bioinformatics · UCR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #05111f;
+  --bg2:      #071628;
+  --surface:  #0a1e34;
+  --surface2: #0f2847;
+  --border:   rgba(0,212,165,.22);
+  --border2:  rgba(0,212,165,.09);
+  --accent:   #00d4a5;
+  --accent2:  #4fa8ff;
+  --glow:     rgba(0,212,165,.22);
+  --text:     #c4d9ea;
+  --muted:    #5e7f99;
+  --heading:  #fff;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'Outfit', sans-serif;
+  --display:  'Syne', sans-serif;
+  --r:        12px;
+  --nav-h:    64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:#fff}
+h1,h2,h3,h4{font-family:var(--display);color:var(--heading);line-height:1.2}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(5,17,31,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border2);transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 4px 32px rgba(0,0,0,.55)}
+.nav-logo{font-family:var(--display);font-size:1.2rem;font-weight:800;color:var(--heading);display:flex;align-items:center;gap:.3rem;letter-spacing:-.01em}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:.1rem;list-style:none}
+.nav-links a{font-family:var(--mono);font-size:.75rem;color:var(--muted);padding:.38rem .7rem;border-radius:6px;transition:all .2s;letter-spacing:.03em}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:var(--glow)}
+.nav-gh{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.73rem;color:var(--muted);border:1px solid var(--border2);border-radius:6px;padding:.32rem .7rem;transition:all .2s}
+.nav-gh:hover{color:var(--accent);border-color:var(--accent);background:var(--glow)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.25rem}
+.hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;display:block}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mob-menu{display:none;position:fixed;inset:var(--nav-h) 0 0 0;z-index:99;background:var(--bg);padding:2rem 1.5rem;flex-direction:column;gap:.5rem}
+.mob-menu.open{display:flex}
+.mob-menu a{font-family:var(--mono);font-size:1rem;color:var(--text);padding:.85rem 1rem;border-radius:8px;border:1px solid transparent;transition:all .2s}
+.mob-menu a:hover{background:var(--surface);color:var(--accent);border-color:var(--border2)}
+
+/* ─── HERO ─── */
+#hero{position:relative;min-height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 2rem) 2rem 5rem}
+#mol-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.38}
+.hero-inner{position:relative;z-index:1;max-width:1120px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4.5rem;align-items:center}
+.hero-badge{font-family:var(--mono);font-size:.7rem;color:var(--accent);border:1px solid rgba(0,212,165,.4);border-radius:20px;padding:.28rem .9rem;display:inline-block;margin-bottom:1.2rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(0,212,165,.06)}
+.hero-title{font-size:clamp(2.8rem,5.5vw,4.2rem);font-weight:800;line-height:1.05;margin-bottom:.8rem}
+.hero-title .ac{color:var(--accent)}
+.hero-sub{font-family:var(--mono);font-size:.9rem;color:var(--muted);margin-bottom:1.1rem;min-height:1.4em}
+.cursor{display:inline-block;background:var(--accent);width:2px;height:.9em;vertical-align:middle;margin-left:1px;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-desc{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:2.25rem;max-width:500px}
+.hero-btns{display:flex;gap:.9rem;flex-wrap:wrap}
+.btn-p{background:var(--accent);color:#05111f;font-family:var(--sans);font-weight:600;padding:.72rem 1.7rem;border-radius:8px;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;font-size:.95rem}
+.btn-p:hover{background:#00f0c0;color:#05111f;transform:translateY(-2px);box-shadow:0 8px 28px var(--glow)}
+.btn-o{border:1px solid var(--border);color:var(--text);font-family:var(--sans);padding:.72rem 1.7rem;border-radius:8px;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;font-size:.95rem}
+.btn-o:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+
+
+/* ─── SECTIONS ─── */
+section{padding:6rem 2rem}
+section:nth-child(even){background:var(--bg2)}
+.container{max-width:1120px;margin:0 auto}
+.sec-label{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);max-width:55px}
+.sec-title{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:700;margin-bottom:.7rem}
+.sec-desc{color:var(--muted);max-width:630px;margin-bottom:3rem;font-size:1rem;line-height:1.7}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.vis{opacity:1;transform:none}
+
+/* ─── RESEARCH ─── */
+.spotlight{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:2.5rem;margin-bottom:2.5rem;position:relative;overflow:hidden}
+.spotlight::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2),#a855f7)}
+.spotlight h3{font-size:1.35rem;margin-bottom:1rem;color:var(--heading)}
+.spotlight p{color:var(--muted);line-height:1.75;font-size:.93rem}
+.collab-badge{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.7rem;color:var(--accent2);background:rgba(79,168,255,.1);border:1px solid rgba(79,168,255,.28);border-radius:4px;padding:.22rem .6rem;margin-top:1rem}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.4rem}
+.res-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.7rem;cursor:default;transition:all .3s;position:relative;overflow:hidden}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .3s}
+.res-card:hover{border-color:var(--border);transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.res-card:hover::before{opacity:1}
+.res-icon{width:44px;height:44px;border-radius:10px;background:var(--glow);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:1rem}
+.res-card h3{font-size:1.05rem;margin-bottom:.55rem}
+.res-card p{color:var(--muted);font-size:.87rem;line-height:1.65}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.9rem}
+.tag{font-family:var(--mono);font-size:.67rem;padding:.18rem .55rem;border-radius:4px;background:rgba(0,212,165,.1);color:var(--accent);border:1px solid rgba(0,212,165,.22)}
+
+/* ─── PROFESSORS ─── */
+.prof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:2rem}
+.prof-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;transition:all .3s}
+.prof-card:hover{border-color:var(--border);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.prof-hdr{display:flex;align-items:center;gap:1.2rem;padding:1.75rem 1.75rem 1.2rem}
+.avatar{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.25rem;font-weight:700;color:#05111f;flex-shrink:0}
+.prof-name{font-size:1.12rem;font-weight:700;margin-bottom:.12rem}
+.prof-role{font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+.prof-mail{font-size:.77rem;margin-top:.18rem}
+.prof-mail a{color:var(--muted);font-size:.77rem}
+.prof-mail a:hover{color:var(--accent)}
+.prof-body{padding:0 1.75rem 1.75rem}
+.bio{font-size:.86rem;color:var(--muted);line-height:1.72;position:relative}
+.bio.clps{max-height:108px;overflow:hidden}
+.bio.clps::after{content:'';position:absolute;bottom:0;left:0;right:0;height:36px;background:linear-gradient(transparent,var(--surface))}
+.exp-btn{background:none;border:1px solid var(--border2);border-radius:6px;color:var(--accent);font-family:var(--mono);font-size:.72rem;padding:.35rem .85rem;cursor:pointer;margin-top:.7rem;transition:all .2s}
+.exp-btn:hover{background:var(--glow);border-color:var(--accent)}
+.awards{margin-top:1rem;border-top:1px solid var(--border2);padding-top:1rem}
+.awards h5{font-family:var(--mono);font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.55rem}
+.aw{font-size:.79rem;color:var(--muted);padding:.32rem 0;border-bottom:1px solid var(--border2);display:flex;gap:.5rem;align-items:flex-start;line-height:1.45}
+.aw::before{content:'▹';color:var(--accent);flex-shrink:0;font-size:.72rem;margin-top:.05rem}
+.aw-yr{font-family:var(--mono);font-size:.67rem;color:var(--accent2);flex-shrink:0;margin-top:.05rem}
+
+/* ─── STUDENTS ─── */
+.stu-grid{display:grid;gap:1.3rem}
+.stu-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.4rem 1.6rem;display:grid;grid-template-columns:54px 1fr;gap:1.2rem;align-items:start;transition:border-color .2s}
+.stu-card:hover{border-color:var(--border)}
+.stu-av{width:54px;height:54px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--muted);font-size:.95rem}
+.stu-type{font-family:var(--mono);font-size:.68rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.22rem}
+.stu-name{font-weight:600;margin-bottom:.28rem}
+.stu-desc{font-size:.84rem;color:var(--muted)}
+
+/* ─── DATABASES ─── */
+.db-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.4rem}
+.db-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.75rem;display:flex;flex-direction:column;gap:.9rem;transition:all .3s;position:relative;overflow:hidden}
+.db-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.db-card:hover{border-color:var(--border);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.db-card:hover::after{transform:scaleX(1)}
+.db-icon{font-size:1.7rem}
+.db-name{font-size:1.02rem;font-weight:700;font-family:var(--display);line-height:1.35}
+.db-desc{font-size:.84rem;color:var(--muted);line-height:1.65;flex:1}
+.db-link{font-family:var(--mono);font-size:.74rem;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:.36rem .85rem;align-self:flex-start;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem}
+.db-link:hover{border-color:var(--accent);background:var(--glow)}
+
+/* ─── PUBLICATIONS ─── */
+.pub-controls{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:2rem;align-items:center}
+.pub-search{flex:1;min-width:230px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:.62rem 1rem;color:var(--text);font-family:var(--sans);font-size:.88rem;outline:none;transition:border-color .2s}
+.pub-search::placeholder{color:var(--muted)}
+.pub-search:focus{border-color:var(--accent)}
+.yr-btns{display:flex;flex-wrap:wrap;gap:.35rem}
+.yb{font-family:var(--mono);font-size:.71rem;background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);padding:.32rem .7rem;cursor:pointer;transition:all .2s}
+.yb:hover{border-color:var(--accent);color:var(--accent)}
+.yb.active{background:var(--accent);color:#05111f;border-color:var(--accent);font-weight:600}
+.pub-count{font-family:var(--mono);font-size:.72rem;color:var(--muted);align-self:center;white-space:nowrap}
+.pub-list{display:flex;flex-direction:column;gap:.9rem}
+.pub-item{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.5rem;display:grid;grid-template-columns:62px 1fr;gap:1.2rem;align-items:start;transition:all .25s}
+.pub-item:hover{border-color:var(--border);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.yr-badge{font-family:var(--mono);font-size:.68rem;font-weight:600;background:rgba(0,212,165,.12);color:var(--accent);border:1px solid rgba(0,212,165,.28);border-radius:6px;padding:.28rem .55rem;white-space:nowrap;text-align:center}
+.pub-title{font-weight:600;font-size:.93rem;margin-bottom:.32rem;line-height:1.4;color:var(--heading)}
+.pub-authors{font-size:.78rem;color:var(--muted);margin-bottom:.3rem;font-style:italic}
+.pub-journal{font-family:var(--mono);font-size:.72rem;color:var(--accent2);margin-bottom:.55rem}
+.pub-link{font-family:var(--mono);font-size:.7rem;color:var(--accent);border:1px solid rgba(0,212,165,.28);border-radius:4px;padding:.2rem .55rem;transition:all .2s;display:inline-flex;align-items:center;gap:.3rem}
+.pub-link:hover{background:var(--glow);border-color:var(--accent)}
+
+/* ─── RESOURCES ─── */
+.res-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(295px,1fr));gap:1.4rem}
+.res-item{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.5rem;transition:all .25s}
+.res-item:hover{border-color:var(--border);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.res-item h4{font-size:.98rem;margin-bottom:.6rem}
+.res-item p{font-size:.84rem;color:var(--muted);line-height:1.65}
+.res-item a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* ─── FOOTER ─── */
+footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 2rem;text-align:center}
+.ft-logo{font-family:var(--display);font-size:1.5rem;font-weight:800;margin-bottom:.35rem}
+.ft-logo span{color:var(--accent)}
+.ft-sub{color:var(--muted);font-size:.93rem;margin-bottom:.25rem}
+.ft-links{display:flex;justify-content:center;gap:2rem;margin:1.5rem 0;flex-wrap:wrap}
+.ft-links a{font-family:var(--mono);font-size:.77rem;color:var(--muted)}
+.ft-links a:hover{color:var(--accent)}
+.ft-copy{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .nav-links,.nav-gh{display:none}
+  .hamburger{display:flex}
+  .hero-inner{grid-template-columns:1fr;gap:2.5rem}
+  .hero-code{display:none}
+}
+@media(max-width:600px){
+  section{padding:4rem 1.25rem}
+  .pub-item{grid-template-columns:1fr}
+  .prof-grid{grid-template-columns:1fr}
+  .stu-card{grid-template-columns:1fr}
+  .stu-av{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">CBio<span>3</span> Lab</a>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#professors">Professors</a></li>
+    <li><a href="#students">Students</a></li>
+    <li><a href="#databases">Databases</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+  <a href="https://github.com/cbio3lab/" target="_blank" class="nav-gh">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <a href="#research"     onclick="closeMob()">Research</a>
+  <a href="#professors"   onclick="closeMob()">Professors</a>
+  <a href="#students"     onclick="closeMob()">Students</a>
+  <a href="#databases"    onclick="closeMob()">Databases</a>
+  <a href="#publications" onclick="closeMob()">Publications</a>
+  <a href="#resources"    onclick="closeMob()">Resources</a>
+  <a href="https://github.com/cbio3lab/" target="_blank">GitHub ↗</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <canvas id="mol-canvas"></canvas>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">Universidad de Costa Rica · CNCA-CONARE</div>
+      <h1 class="hero-title">CBio<span class="ac">3</span><br>Laboratory</h1>
+      <p class="hero-sub">&gt; Specializing in <span id="tw"></span><span class="cursor"></span></p>
+      <p class="hero-desc">
+        Computational Biophysics, Biology, and Bioinformatics group focused on drug design, machine learning, theoretical chemistry, and computational biology applied to pharmaceutical and environmental sciences.
+      </p>
+      <div class="hero-btns">
+        <a href="#publications" class="btn-p">Publications</a>
+        <a href="https://github.com/cbio3lab/" target="_blank" class="btn-o">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub Profile
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-code">
+      <div class="code-hdr">
+        <div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div>
+       
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESEARCH ═══ -->
+<section id="research">
+  <div class="container">
+    <div class="sec-label">01 // Research Areas</div>
+    <h2 class="sec-title">What We Study</h2>
+    <p class="sec-desc">Our interdisciplinary research spans computational chemistry, biology, machine learning, and experimental methods—all applied to drug design, development, environmental sciences, and chemical regulation.</p>
+
+    <div class="spotlight reveal">
+      <div class="tags" style="margin-bottom:1rem"><span class="tag">Featured Project</span></div>
+      <h3>Design of New Bioinspired Superantibiotics</h3>
+      <p>Antibiotic resistance (ABR) is a critical global public health threat—1.27 million deaths worldwide in 2019 alone, with projections surpassing cancer mortality by 2050. In collaboration with IRTA (Institute of Agrifood Research and Technology, Spain), we design bioinspired superantibiotics based on personalized host defense peptides (HDPs) selected by artificial intelligence. Our transdisciplinary approach integrates broad antimicrobial screening with experimental and in-silico physicochemical characterization to recombinantly produce tailored HDPs with superior potency, selectivity, and lower toxicity than existing antimicrobials.</p>
+      <span class="collab-badge">🤝 Collaboration: IRTA · Dra. Elena García &amp; Dra. Ana Arís (Barcelona)</span>
+    </div>
+
+    <div class="res-grid">
+      <div class="res-card reveal">
+        <div class="res-icon">💊</div>
+        <h3>Simulation — Drug Design</h3>
+        <p>Chemoinformatics tools, ADME-Tox profiling, molecular docking with Glide, QSAR studies, and classical molecular dynamics simulations with AMBER—focused on antibiotic and drug discovery pipelines.</p>
+        <div class="tags"><span class="tag">AMBER</span><span class="tag">Glide</span><span class="tag">QSAR</span><span class="tag">ADME-Tox</span></div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-icon">🧬</div>
+        <h3>Simulation — Computational Biology</h3>
+        <p>QSAR and MD simulations in peptides and proteins, especially antimicrobial peptides (AMPs). Mutation-effect prediction in diseases such as Alzheimer's and Myotonia. Study of neuroprotective and antioxidant peptides.</p>
+        <div class="tags"><span class="tag">AMPs</span><span class="tag">MD Simulations</span><span class="tag">Protein Structure</span></div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-icon">⚗️</div>
+        <h3>Computational Chemistry</h3>
+        <p>Development and parameterization of the IEFPCM/MST continuum solvation model using Gaussian. Determination of QM-based physicochemical properties in drugs and environmental pollutants, including SAMPL blind challenges.</p>
+        <div class="tags"><span class="tag">Gaussian</span><span class="tag">IEFPCM/MST</span><span class="tag">SAMPL</span></div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-icon">📐</div>
+        <h3>Theoretical — Physical Chemistry</h3>
+        <p>Theoretical models for pH-dependent lipophilicity profiles of ionizable compounds and for relative water content in aerosols as a function of organic solutes in colloidal suspensions. Development of scoring functions for docking studies with Pharmacelera Inc.</p>
+        <div class="tags"><span class="tag">logP/logD</span><span class="tag">pKa</span><span class="tag">Lipophilicity</span></div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-icon">🤖</div>
+        <h3>Data Exploration &amp; AI</h3>
+        <p>Machine learning models for physicochemical properties in small molecules (bioactivity, lipophilicity, tautomeric equilibria) and pollutants (solubility, toxicity). ML-based environmental bioaccumulation prediction. Structure-based lipophilicity scale for amino acids.</p>
+        <div class="tags"><span class="tag">Machine Learning</span><span class="tag">Python</span><span class="tag">Chemoinformatics</span></div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-icon">🌿</div>
+        <h3>Experimental Methods</h3>
+        <p>Potentiometric and Shake-flask methods for pKa and lipophilicity. Quantification of emerging environmental pollutants via analytical techniques. Phytotherapeutics with nanotechnology. Chromatography (HPLC, UPLC), NMR, MS, IR, and ORAC antioxidant methods.</p>
+        <div class="tags"><span class="tag">HPLC</span><span class="tag">NMR</span><span class="tag">ORAC</span><span class="tag">Pollutants</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROFESSORS ═══ -->
+<section id="professors">
+  <div class="container">
+    <div class="sec-label">02 // People</div>
+    <h2 class="sec-title">Professors</h2>
+    <p class="sec-desc">The researchers leading the CBio3 laboratory at the Universidad de Costa Rica.</p>
+    <div class="prof-grid">
+
+      <!-- William Zamora -->
+      <div class="prof-card reveal">
+        <div class="prof-hdr">
+          <div class="avatar">WZ</div>
+          <div>
+            <div class="prof-name">William J. Zamora R., Ph.D</div>
+            <div class="prof-role">Group Leader</div>
+            <div class="prof-mail"><a href="mailto:william.zamoraramirez@ucr.ac.cr">william.zamoraramirez@ucr.ac.cr</a></div>
+          </div>
+        </div>
+        <div class="prof-body">
+          <div class="bio clps" id="bio-wz">Ph.D. from the University of Barcelona (<em>summa cum laude</em>) under Prof. Javier Luque, followed by a postdoctorate combining theoretical and experimental computer-aided drug design (CADD) methods. Visitor Professor at UFPA-Brazil (2017) and UB (2021). Joined UCR and the Advanced Computing National Collaboratory (CNCA-CONARE) in 2020, forming an interdisciplinary research group in CADD and Computational Biology.<br><br>Currently Professor at the School of Chemistry, Faculty of Pharmacy, Postgraduate Studies in Biomedical Sciences, and Postgraduate Studies in Chemistry at UCR. Associate Researcher at CNCA-CONARE. International collaborations with U. of Barcelona, U. of Nebraska, Seoul National University, U. of Melbourne, TEC, Pion Inc. (UK), and Pharmacelera Inc. (Spain).<br><br>Reviewer for: Journal of Computer-Aided Molecular Design, Computers in Biology and Medicine, FEBS Letters, and ACS Journals.</div>
+          <button class="exp-btn" onclick="toggleBio('bio-wz',this)">Show more ↓</button>
+          <div class="awards">
+            <h5>Selected Awards &amp; Recognition</h5>
+            <div class="aw"><span class="aw-yr">2021</span>Coimbra Group Scholarship "Young Professors from Latin America" — First Central American</div>
+            <div class="aw"><span class="aw-yr">2021</span>SAMPL7 Challenge — Most Exact In Silico Method for Lipophilicity (First Latin American)</div>
+            <div class="aw"><span class="aw-yr">2020</span>Biophysical Society Travel Award for Early Career Researcher — First Central American</div>
+            <div class="aw"><span class="aw-yr">PhD</span>Honorable Mention <em>Summa cum laude</em> — University of Barcelona</div>
+            <div class="aw"><span class="aw-yr">2018</span>EMBO Course — "Integrative modeling of biomolecular interactions"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Silvana de Souza -->
+      <div class="prof-card reveal">
+        <div class="prof-hdr">
+          <div class="avatar" style="background:linear-gradient(135deg,#a855f7,#4fa8ff)">SP</div>
+          <div>
+            <div class="prof-name">Silvana de Souza P., Ph.D</div>
+            <div class="prof-role">Researcher</div>
+            <div class="prof-mail"><a href="mailto:silvana.desouza@ucr.ac.cr">silvana.desouza@ucr.ac.cr</a></div>
+          </div>
+        </div>
+        <div class="prof-body">
+          <div class="bio clps" id="bio-sp">Degrees in Chemistry (UFPA, 2009) and Pharmacy (CESUPA, 2010) from Brazil. M.Sc. in Science Education (2010) and M.Sc. in Genetics and Molecular Biology / Bioinformatics (UFPA, 2012). Ph.D. at the University of Barcelona (2017) under Dr. Carles Curutchet, focused on the impact of electronic polarization in biomolecular interactions at ground and excited states.<br><br>Visitor Professor at UB Department of Pharmacy and Physical Chemistry (2019). Currently Professor at the Faculty of Pharmacy at UCR.</div>
+          <button class="exp-btn" onclick="toggleBio('bio-sp',this)">Show more ↓</button>
+          <div class="awards">
+            <h5>Selected Awards</h5>
+            <div class="aw"><span class="aw-yr">2021</span>SAMPL7 — Outstanding Participation in Lipophilicity Global Challenge</div>
+            <div class="aw"><span class="aw-yr">2017</span>CNPq Post-doctoral Junior Fellowship (PDJ-CNPq 402036/2017-4), Brazil</div>
+            <div class="aw"><span class="aw-yr">2016</span>XIV Trobada d'Història de la Ciència — Best Video Award, Castellón, Spain</div>
+            <div class="aw"><span class="aw-yr">2016</span>Comas i Solà Competition (UB) — Most Popular Video Award</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Esteban Bertsch -->
+      <div class="prof-card reveal">
+        <div class="prof-hdr">
+          <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">EB</div>
+          <div>
+            <div class="prof-name">Esteban Bertsch-Aguilar, Ms.C</div>
+            <div class="prof-role">Postgraduate Researcher</div>
+            <div class="prof-mail"><a href="mailto:ESTEBAN.BERTSCH@ucr.ac.cr">ESTEBAN.BERTSCH@ucr.ac.cr</a></div>
+          </div>
+        </div>
+        <div class="prof-body">
+          <div class="bio clps" id="bio-eb">Associate Professor at the School of Chemistry, UCR. Part of the CBio3 group since 2021. M.Sc. student under Prof. William Zamora investigating the influence of ion formation on lipophilicity of small organic molecules — addressing whether chemical equilibria between neutral and ionic species (carboxylates, amines, etc.) improve lipophilicity prediction calculations at different pH values.<br><br>Also collaborates on Machine Learning projects for novel lipophilicity descriptors with the University of Barcelona and Pion Inc. (UK).</div>
+          <button class="exp-btn" onclick="toggleBio('bio-eb',this)">Show more ↓</button>
+          <div class="awards">
+            <h5>Selected Awards</h5>
+            <div class="aw"><span class="aw-yr">2026</span>ACS CINF Award of Scientific Excellence — ACS Spring 2026 (ML-driven solubility profiles)</div>
+            <div class="aw"><span class="aw-yr">2024</span>CAMLC24 — Only Latin American accepted to the Cheminformatics &amp; ML Chemistry conference</div>
+            <div class="aw"><span class="aw-yr">2021</span>ACS Spring National Meeting — Poster Presentation (household titration experiment)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jannete Wu -->
+      <div class="prof-card reveal">
+        <div class="prof-hdr">
+          <div class="avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">JW</div>
+          <div>
+            <div class="prof-name">Jannete Wen Fang Wu Wu, Ms.C</div>
+            <div class="prof-role">Researcher</div>
+            <div class="prof-mail"><a href="mailto:jannette.wu@ucr.ac.cr">jannette.wu@ucr.ac.cr</a></div>
+          </div>
+        </div>
+        <div class="prof-body">
+          <div class="bio" id="bio-jw">M.Sc. in Food Engineering from the Universidad de Costa Rica. Currently pursuing a Ph.D. at UCR focused on lactic acid bacteria and their potential as antagonistic microorganisms for industrial and health applications, as well as the production of antimicrobial peptides.<br><br>Lecturer at the Food Technology Department (UCR) and the Industrial Chemical Engineering Department (ULACIT). Also works as a food industry consultant.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STUDENTS ═══ -->
+<section id="students">
+  <div class="container">
+    <div class="sec-label">03 // Team</div>
+    <h2 class="sec-title">Students</h2>
+    <p class="sec-desc">Graduate, undergraduate, and former members of the CBio3 group. Profiles will be updated as students join and contribute to ongoing projects.</p>
+    <div class="stu-grid">
+      <div class="stu-card reveal">
+        <div class="stu-av">G</div>
+        <div>
+          <div class="stu-type">Graduate Student Researcher</div>
+          <div class="stu-name">Name — To Be Added</div>
+          <div class="stu-desc" style="font-style:italic">Profile coming soon. Interested in joining? Reach out to the group leader.</div>
+        </div>
+      </div>
+      <div class="stu-card reveal">
+        <div class="stu-av">U</div>
+        <div>
+          <div class="stu-type">Undergraduate Student Researcher</div>
+          <div class="stu-name">Name — To Be Added</div>
+          <div class="stu-desc" style="font-style:italic">Profile coming soon.</div>
+        </div>
+      </div>
+      <div class="stu-card reveal">
+        <div class="stu-av">✓</div>
+        <div>
+          <div class="stu-type">Former Member</div>
+          <div class="stu-name">Name — To Be Added</div>
+          <div class="stu-desc" style="font-style:italic">Alumni profile coming soon.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DATABASES ═══ -->
+<section id="databases">
+  <div class="container">
+    <div class="sec-label">04 // Open Science</div>
+    <h2 class="sec-title">Databases</h2>
+    <p class="sec-desc">Committed to open science and FAIR data principles. Our curated databases are freely available to the global research community.</p>
+    <div class="db-grid">
+      <div class="db-card reveal">
+        <div class="db-icon">🌿</div>
+        <div class="db-name">NAPRORE-CR</div>
+        <div class="db-desc">Natural Products Repository of Costa Rica — an open-access inventory of isolated and identified natural products from one of the world's most biodiverse countries, supporting drug design and biomaterial research as part of the Latin American Natural Product Database (LANaPD).</div>
+        <a href="https://doi.org/10.5281/zenodo.7858061" target="_blank" class="db-link">Access Dataset ↗</a>
+      </div>
+      <div class="db-card reveal">
+        <div class="db-icon">🧪</div>
+        <div class="db-name">Toluene/Water Partition Coefficient Database</div>
+        <div class="db-desc">252 unique molecules with experimentally determined toluene/water partition coefficients. A valuable descriptor for studying intramolecular hydrogen bonds and chameleon-like properties that modulate solubility and permeability in drugs.</div>
+        <a href="https://doi.org/10.5281/zenodo.7884698" target="_blank" class="db-link">Access Dataset ↗</a>
+      </div>
+      <div class="db-card reveal">
+        <div class="db-icon">📊</div>
+        <div class="db-name">n-Octanol/Water Partition &amp; Distribution Coefficients</div>
+        <div class="db-desc">Critical compilation of experimental logPN, pKa, logPI, and logDpH values for 225 entries from literature. Experimental techniques thoroughly revised; molecules classified as acids and bases by functional groups and pKa values.</div>
+        <a href="https://doi.org/10.5281/zenodo.13208946" target="_blank" class="db-link">Access Dataset ↗</a>
+      </div>
+      <div class="db-card reveal">
+        <div class="db-icon">💧</div>
+        <div class="db-name">n-Octanol/Water Partition Coefficient Database</div>
+        <div class="db-desc">Comprehensive database of n-octanol/water partition coefficients for small organic molecules, supporting lipophilicity research and the development of computational prediction models.</div>
+        <a href="https://zenodo.org/records/18616059" target="_blank" class="db-link">Access Dataset ↗</a>
+      </div>
+      <div class="db-card reveal">
+        <div class="db-icon">🔬</div>
+        <div class="db-name">SolCbio3Database</div>
+        <div class="db-desc">Open database of experimentally determined intrinsic solubility (logS in mol/L), melting point (°C), and neutral octanol-water partition (logPN) for organic molecules. Includes General Solubility Equation calculations and absolute errors vs. experimental values, with full literature references.</div>
+        <a href="https://zenodo.org/records/18624099" target="_blank" class="db-link">Access Dataset ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PUBLICATIONS ═══ -->
+<section id="publications">
+  <div class="container">
+    <div class="sec-label">05 // Output</div>
+    <h2 class="sec-title">Publications</h2>
+    <p class="sec-desc">Peer-reviewed articles, preprints, and conference proceedings from the CBio3 group. Search by title, author, or journal.</p>
+
+    <div class="pub-controls">
+      <input type="text" class="pub-search" id="pubSearch" placeholder="Search title, author, journal…" oninput="filterPubs()">
+      <div class="yr-btns">
+        <button class="yb active" data-yr="all"   onclick="setYr('all',this)">All</button>
+        <button class="yb"        data-yr="2026"  onclick="setYr('2026',this)">2026</button>
+        <button class="yb"        data-yr="2025"  onclick="setYr('2025',this)">2025</button>
+        <button class="yb"        data-yr="2024"  onclick="setYr('2024',this)">2024</button>
+        <button class="yb"        data-yr="2023"  onclick="setYr('2023',this)">2023</button>
+        <button class="yb"        data-yr="2022"  onclick="setYr('2022',this)">2022</button>
+        <button class="yb"        data-yr="2021"  onclick="setYr('2021',this)">2021</button>
+        <button class="yb"        data-yr="2020"  onclick="setYr('2020',this)">2020</button>
+        <button class="yb"        data-yr="older" onclick="setYr('older',this)">≤ 2019</button>
+      </div>
+      <span class="pub-count" id="pubCount"></span>
+    </div>
+    <div class="pub-list" id="pubList"></div>
+  </div>
+</section>
+
+<!-- ═══ RESOURCES ═══ -->
+<section id="resources">
+  <div class="container">
+    <div class="sec-label">06 // Infrastructure</div>
+    <h2 class="sec-title">Resources</h2>
+    <p class="sec-desc">Due to the interdisciplinary nature of our group, we leverage our own facilities as well as computing resources generously shared by our international collaborators.</p>
+    <div class="res-list">
+      <div class="res-item reveal">
+        <h4>💻 CBio3 Computer Lab</h4>
+        <p>Our on-site laboratory equipped with all necessary software for computational chemistry, molecular dynamics, machine learning, bioinformatics, and chemoinformatics research.</p>
+      </div>
+      <div class="res-item reveal">
+        <h4>🌐 CSUC HPC — Barcelona</h4>
+        <p>High-performance computing from the <em>Consorci de Serveis Universitaris de Catalunya (CSUC)</em>, accessible through our collaboration with Dr. Javier Luque, Dr. Antonio Viayna, Dr. Javier Vázquez, and Dr. Carles Curutchet (UB). <a href="http://www.ub.edu/cbcg/index.php" target="_blank">CBCG Group ↗</a></p>
+      </div>
+      <div class="res-item reveal">
+        <h4>🔬 CICIMA-HPC — UCR</h4>
+        <p>Computational Cluster of the Materials Science and Engineering Research Center at UCR. Contact: Dr. Federico Muñoz <a href="mailto:federico.munozrojas@ucr.ac.cr">(federico.munozrojas@ucr.ac.cr)</a>. <a href="https://sites.google.com/view/cluster-cicima/uso-b%C3%A1sico/acceso-remoto" target="_blank">Cluster Info ↗</a></p>
+      </div>
+      <div class="res-item reveal">
+        <h4>⚡ KABRE — CeNAT / CNCA</h4>
+        <p>National High Technology Center's Advanced Computing Laboratory (CNCA) supercomputing infrastructure, including the KABRE HPC cluster. <a href="https://kabre.cenat.ac.cr/" target="_blank">KABRE ↗</a></p>
+      </div>
+      <div class="res-item reveal">
+        <h4>🏛️ UCR Institutional HPC Cluster</h4>
+        <p>Access to the Universidad de Costa Rica's institutional cluster for large-scale computational research. <a href="https://hpc.ucr.ac.cr/" target="_blank">UCR HPC ↗</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="ft-logo">CBio<span>3</span> Lab</div>
+  <p class="ft-sub">Computational Biophysics, Biology, and Bioinformatics Group</p>
+  <p class="ft-sub" style="font-size:.87rem">Universidad de Costa Rica · CNCA-CONARE · San José, Costa Rica</p>
+  <div class="ft-links">
+    <a href="#research">Research</a>
+    <a href="#professors">Professors</a>
+    <a href="#databases">Databases</a>
+    <a href="#publications">Publications</a>
+    <a href="#resources">Resources</a>
+    <a href="https://github.com/cbio3lab/" target="_blank">GitHub ↗</a>
+  </div>
+  <p class="ft-copy">© 2025 CBio3 Laboratory — Universidad de Costa Rica</p>
+</footer>
+
+<script>
+/* ─── PUBLICATIONS DATA ─── */
+const PUBS = [
+  {year:2026,title:"LiPHEX: A QSPR Framework for Predicting n-Hexadecane/Water logP Values",authors:"Zumbado Silva, Luis A.; Zamora Ramírez, William J.",journal:"ChemRxiv",link:"https://chemrxiv.org/doi/full/10.26434/chemrxiv.15002074/v1"},
+  {year:2026,title:"Data-driven critical evaluation of the General Solubility Equation: When is it a valid solubility predictor for Drug-like Molecules?",authors:"Bertsch-Aguilar, Esteban; Quirós, Nahomy; Schosinsky, Frederick; Pinheiro, Silvana; Medina-Franco, Jose Luis; Zamora, William J.",journal:"ChemRxiv",link:"https://chemrxiv.org/doi/full/10.26434/chemrxiv.15001877/v2"},
+  {year:2026,title:"Design, Synthesis, Biological Evaluation, and In Silico Analysis of Novel Antifungal Agents Targeting Trichophyton Species",authors:"Cabezas, Jorge A.; Arias, María L.; Ferllini, Natasha; Rojas, Yirlany; Mora, Daniel; De Souza, Silvana; Viayna, Antonio; Zamora, William J.",journal:"Chemistry & Biodiversity",link:"https://onlinelibrary.wiley.com/doi/abs/10.1002/cbdv.202501477"},
+  {year:2026,title:"Pigments, Chromatophore Structure, and Gene Expression Underlying Colour Polytypy of a Panamanian Poison Frog",authors:"Mantzana-Oikonomaki, Vasiliki; Tamayo-Castillo, Giselle; Vásquez-Cháves, Víctor; Mora-Machado, Abel; Zamora Ramirez, William J.; et al.",journal:"Molecular Ecology",link:"https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.70214"},
+  {year:2025,title:"B3P2: A Blood–Brain Barrier Permeability Predictor for Small Molecules",authors:"Silva, Luis A. Zumbado; Gaza, Antonio Viayna; Ramirez, William J. Zamora",journal:"2025 IEEE 7th International Conference on BioInspired Processing (BIP)",link:"https://ieeexplore.ieee.org/abstract/document/11489146"},
+  {year:2025,title:"Assessing the ligand native-like pose using a quantum mechanical-derived hydropathic score for protein-ligand complementarity",authors:"Medel, Brian; Zamora, William J.; Herrero, Enric; Kellogg, Glen E.; Selent, Jana; Vázquez, Javier; Luque, F. Javier",journal:"BioRxiv",link:"https://www.biorxiv.org/content/10.1101/2025.10.20.683430v1"},
+  {year:2025,title:"Natural Products Repository of Costa Rica (NAPRORE-CR): An Open-Access Database",authors:"Acuña-Jiménez, Daniel A.; Rodríguez-Zúñiga, Jose; et al.; Zamora, William J.; Medina-Franco, José L.",journal:"Journal of Chemical Information and Modeling",link:"https://doi.org/10.1021/acs.jcim.5c01552"},
+  {year:2025,title:"On the biologically relevant chemical space: BioReCS",authors:"Medina-Franco, José L.; López-López, Edgar; Avellaneda-Tamayo, Juan F.; Zamora, William J.",journal:"Frontiers in Drug Discovery",link:"https://www.frontiersin.org/journals/drug-discovery/articles/10.3389/fddsv.2025.1674289/full"},
+  {year:2025,title:"LiProS: Findable, Accessible, Interoperable, and Reusable Data Simulation Workflow to Predict Accurate Lipophilicity Profiles for Small Molecules",authors:"Bertsch-Aguilar, Esteban; Piedra, Antonio; Acuña, Daniel; Suñer, Sebastián; Pinheiro, Silvana; Zamora, William J.",journal:"Molecular Informatics",link:"https://onlinelibrary.wiley.com/doi/abs/10.1002/minf.70007"},
+  {year:2025,title:"Structure–Antimicrobial Activity Relationships of Recombinant Host Defence Peptides Against Drug-Resistant Bacteria",authors:"Travé-Asensio, Sergi; Tort-Miró, Aida; Pinheiro, Silvana; Garcia-Fruitós, Elena; Arís, Anna; Zamora, William J.",journal:"Microbial Biotechnology",link:"https://onlinelibrary.wiley.com/doi/abs/10.1111/1751-7915.70204"},
+  {year:2024,title:"Latin American Natural Product Database (LANaPDB): An Update",authors:"Gómez-García, Alejandro; Acuña Jiménez, Daniel A.; Zamora, William J.; et al.; Medina-Franco, José L.",journal:"Journal of Chemical Information and Modeling",link:"https://pubs.acs.org/doi/10.1021/acs.jcim.4c01560"},
+  {year:2024,title:"From Canonical to Unique: Extension of A Lipophilicity Scale of Amino Acids to Non-Standard Residues",authors:"Viayna, Antonio; Matamoros, Paulina; Blázquez-Ruano, David; Zamora Ramírez, William J.",journal:"ChemRxiv",link:"https://chemrxiv.org/doi/full/10.26434/chemrxiv-2024-8smwg"},
+  {year:2024,title:"Updating and profiling the natural product-likeness of Latin American compound libraries",authors:"Gómez-García, Alejandro; et al.; Zamora, William J.; et al.; Medina-Franco, José L.",journal:"Molecular Informatics",link:"https://onlinelibrary.wiley.com/doi/abs/10.1002/minf.202400052"},
+  {year:2023,title:"Trends and challenges in chemoinformatics research in Latin America",authors:"Miranda-Salas, Jazmín; Peña-Varas, Carlos; et al.; Zamora, William J.; et al.; Medina-Franco, José L.",journal:"Artificial Intelligence in the Life Sciences",link:"https://linkinghub.elsevier.com/retrieve/pii/S2667318523000211"},
+  {year:2023,title:"Navigating the Chemical Space and Chemical Multiverse of a Unified Latin American Natural Product Database: LANaPDB",authors:"Gómez-García, Alejandro; et al.; Zamora, William J.; et al.; Medina-Franco, José L.",journal:"Pharmaceuticals",link:"https://www.mdpi.com/1424-8247/16/10/1388"},
+  {year:2023,title:"Unraveling the encrypted lipophilicity of disulfide bridges in the molecular architecture of proteins and peptides: A machine learning approach in structural bioinformatics",authors:"Zamora, William J.; Rodríguez, Jose; García, Adriana; Pinheiro, Silvana",journal:"Biophysical Journal",link:"https://linkinghub.elsevier.com/retrieve/pii/S000634952201846X"},
+  {year:2023,title:"Finding for New Drugs in Nature for Neglected Tropical Diseases: In Silico Study of Homolycorine Alkaloids Against Chagas Disease",authors:"Mora, Daniel; Schosinsky, Frederick; et al.; Pinheiro, Silvana; Zamora, William",journal:"2023 IEEE 5th International Conference on BioInspired Processing (BIP)",link:"https://ieeexplore.ieee.org/document/10379389/"},
+  {year:2023,title:"Antibiotic Resistance and Food Safety: Perspectives on New Technologies and Molecules for Microbial Control in the Food Industry",authors:"Wu-Wu, Jannette Wen Fang; Guadamuz-Mayorga, Carolina; Oviedo-Cerdas, Douglas; Zamora, William J.",journal:"Antibiotics",link:"https://www.mdpi.com/2079-6382/12/3/550"},
+  {year:2023,title:"Prediction of toluene/water partition coefficients in the SAMPL9 blind challenge: assessment of machine learning and IEF-PCM/MST continuum solvation models",authors:"Zamora, William J.; Viayna, Antonio; Pinheiro, Silvana; Curutchet, Carles; et al.; Luque, F. Javier",journal:"Physical Chemistry Chemical Physics",link:"http://xlink.rsc.org/?DOI=D3CP01428B"},
+  {year:2023,title:"Critical Assessment of pH-Dependent Lipophilicity Profiles of Small Molecules: Which One Should We Use and In Which Cases?",authors:"Bertsch, Esteban; Suñer, Sebastián; Pinheiro, Silvana; Zamora, William J.",journal:"ChemPhysChem",link:"https://onlinelibrary.wiley.com/doi/abs/10.1002/cphc.202300548"},
+  {year:2023,title:"Effect of the Lipophilicity of Endocannabinoid Peptides on QSAR Studies in the Modulation at CB1 Receptors",authors:"Zamora Ramírez, William J.; Hernández, Juan; Pinheiro, Silvana",journal:"SSRN",link:"https://www.ssrn.com/abstract=4339917"},
+  {year:2022,title:"Towards an Understanding of the Lipophilicity of Non-Coded Amino Acids: Computational Simulations of Proline Analogs",authors:"Matamoros, Paulina; Pinheiro, Silvana; Viayna, Antonio; Zamora, William",journal:"2022 IEEE 4th International Conference on BioInspired Processing (BIP)",link:"https://ieeexplore.ieee.org/document/10032480"},
+  {year:2022,title:"Molecular characteristics of several drugs evaluated from solvent/water partition measurements: Solvation parameters and intramolecular hydrogen bond indicator",authors:"Ruiz, Rebeca; Zamora, William J.; Ràfols, Clara; Bosch, Elisabeth",journal:"European Journal of Pharmaceutical Sciences",link:"https://linkinghub.elsevier.com/retrieve/pii/S0928098721003687"},
+  {year:2022,title:"Crystal Forms of the Antihypertensive Drug Irbesartan: A Crystallographic, Spectroscopic, and Hirshfeld Surface Analysis Investigation",authors:"Araya-Sibaja, Andrea Mariela; et al.; Zamora, William J.; et al.",journal:"ACS Omega",link:"https://pubs.acs.org/doi/10.1021/acsomega.2c00545"},
+  {year:2021,title:"Multiple linear regression models for predicting the n-octanol/water partition coefficients in the SAMPL7 blind challenge",authors:"Lopez, Kenneth; Pinheiro, Silvana; Zamora, William J.",journal:"Journal of Computer-Aided Molecular Design",link:"https://link.springer.com/article/10.1007/s10822-021-00409-2"},
+  {year:2021,title:"Structural, energetic and lipophilic analysis of SARS-CoV-2 non-structural protein 9 (NSP9)",authors:"de O. Araújo, Jéssica; Pinheiro, Silvana; Zamora, William J.; et al.",journal:"Scientific Reports",link:"https://www.nature.com/articles/s41598-021-02366-0"},
+  {year:2021,title:"Prediction of n-octanol/water partition coefficients and acidity constants (pKa) in the SAMPL7 blind challenge with the IEFPCM-MST model",authors:"Viayna, Antonio; Pinheiro, Silvana; Curutchet, Carles; Luque, F. Javier; Zamora, William J.",journal:"Journal of Computer-Aided Molecular Design",link:"https://doi.org/10.1007/s10822-021-00394-6"},
+  {year:2020,title:"Prediction of the n-octanol/water partition coefficients in the SAMPL6 blind challenge from MST continuum solvation calculations",authors:"Zamora, William J.; Pinheiro, Silvana; German, Kilian; Ràfols, Clara; Curutchet, Carles; Luque, F. Javier",journal:"Journal of Computer-Aided Molecular Design",link:"https://link.springer.com/article/10.1007/s10822-019-00262-4"},
+  {year:2020,title:"Insights into the Effect of the Membrane Environment on the Three-dimensional Structure-function Relationship of Antimicrobial Peptides",authors:"Zamora, William J.; De Souza, Silvana; Separovic, Frances; Luque, Fco. Javier",journal:"Biophysical Journal",link:"https://www.sciencedirect.com/science/article/pii/S0006349519323276"},
+  {year:2019,title:"Development of a Structure-Based, pH-Dependent Lipophilicity Scale of Amino Acids from Continuum Solvation Calculations",authors:"Zamora, William J.; Campanera, Josep M.; Luque, F. Javier",journal:"The Journal of Physical Chemistry Letters",link:"https://doi.org/10.1021/acs.jpclett.9b00028"},
+  {year:2017,title:"Prediction of pH-Dependent Hydrophobic Profiles of Small Molecules from Miertus-Scrocco-Tomasi Continuum Solvation Calculations",authors:"Zamora, William J.; Curutchet, Carles; Campanera, Josep M.; Luque, F. Javier",journal:"Journal of Physical Chemistry B",link:"https://pubs.acs.org/doi/10.1021/acs.jpcb.7b08311"},
+  {year:2017,title:"Fractioning of Proanthocyanidins of Uncaria tomentosa. Composition and Structure-Bioactivity Relationship",authors:"Navarro, Mirtha; Zamora, William; Quesada, Silvia; et al.",journal:"Antioxidants",link:"https://www.mdpi.com/2076-3921/6/3/60"},
+  {year:2017,title:"Preliminar study on poliphenolic contents and antioxidant capacity of Malus domestica cultivated in Costa Rica",authors:"Navarro-Hoyos, Mirtha; et al.; Zamora-Ramírez, William; et al.",journal:"Revista Tecnología en Marcha",link:"http://www.scielo.sa.cr/scielo.php?script=sci_abstract&pid=S0379-39822017000100003"},
+  {year:2017,title:"Structural and energetic study of cation–π–cation interactions in proteins",authors:"Pinheiro, Silvana; Soteras, Ignacio; et al.; Luque, F. Javier; Curutchet, Carles",journal:"Physical Chemistry Chemical Physics",link:"https://pubs.rsc.org/en/content/articlelanding/2017/cp/c6cp08448f"},
+  {year:2017,title:"Can Förster Theory Describe Stereoselective Energy Transfer Dynamics in a Protein–Ligand Complex?",authors:"Pinheiro, Silvana; Curutchet, Carles",journal:"The Journal of Physical Chemistry B",link:"https://doi.org/10.1021/acs.jpcb.7b00217"},
+  {year:2015,title:"Phenolic Assessment of Uncaria tomentosa L. (Cat's Claw): Leaves, Stem, Bark and Wood Extracts",authors:"Navarro Hoyos, Mirtha; et al.; Zamora Ramirez, William; et al.",journal:"Molecules",link:"https://www.mdpi.com/1420-3049/20/12/19875"},
+  {year:2015,title:"Estudio preliminar del potencial bioactivo de la Annona cherimola y Prunus domestica cultivadas en Costa Rica",authors:"Navarro-Hoyos, Mirtha; et al.; Zamora-Ramírez, William; et al.",journal:"Revista Tecnología en Marcha",link:"https://revistas.tec.ac.cr/index.php/tec_marcha/article/view/2012"},
+  {year:2015,title:"Implicit Solvation Methods in the Study of Ligand–Protein Interactions",authors:"Zamora, William; Campanera, Josep M.; Luque, F. Javier",journal:"In Silico Drug Discovery and Design",link:"https://www.taylorfrancis.com/chapters/edit/10.1201/b18799-14"},
+  {year:2014,title:"Estudio de cuatro plantas con uso medicinal tradicional cultivadas en las regiones Huetar Norte y Atlántica de Costa Rica",authors:"Moreira-González, Ileana; et al.; Zamora-Ramírez, William; et al.",journal:"Revista Tecnología en Marcha",link:"https://revistas.tec.ac.cr/index.php/tec_marcha/article/view/2087"},
+];
+
+let activeYr = 'all';
+
+function renderPubs(list) {
+  const el = document.getElementById('pubList');
+  const ct = document.getElementById('pubCount');
+  ct.textContent = list.length + ' paper' + (list.length !== 1 ? 's' : '');
+  el.innerHTML = list.map(p => `
+    <div class="pub-item">
+      <div class="yr-badge">${p.year}</div>
+      <div>
+        <div class="pub-title">${p.title}</div>
+        <div class="pub-authors">${p.authors}</div>
+        <div class="pub-journal">${p.journal}</div>
+        <a href="${p.link}" target="_blank" class="pub-link">Read Article ↗</a>
+      </div>
+    </div>`).join('');
+}
+
+function filterPubs() {
+  const q = document.getElementById('pubSearch').value.toLowerCase();
+  let list = PUBS;
+  if (activeYr !== 'all') {
+    if (activeYr === 'older') list = list.filter(p => p.year <= 2019);
+    else list = list.filter(p => p.year === +activeYr);
+  }
+  if (q) list = list.filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.authors.toLowerCase().includes(q) ||
+    p.journal.toLowerCase().includes(q)
+  );
+  renderPubs(list);
+}
+
+function setYr(yr, btn) {
+  activeYr = yr;
+  document.querySelectorAll('.yb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPubs();
+}
+
+renderPubs(PUBS);
+
+/* ─── MOLECULAR CANVAS ─── */
+const canvas = document.getElementById('mol-canvas');
+const ctx = canvas.getContext('2d');
+let nodes = [], raf;
+
+function initCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  nodes = Array.from({length:70}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2.2 + 1.2,
+    vx: (Math.random() - .5) * .45,
+    vy: (Math.random() - .5) * .45,
+  }));
+}
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  nodes.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  const D = 140;
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i+1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if (d < D) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(0,212,165,${(1-d/D)*.32})`;
+        ctx.lineWidth = .7;
+        ctx.stroke();
+      }
+    }
+    ctx.beginPath();
+    ctx.arc(nodes[i].x, nodes[i].y, nodes[i].r, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,212,165,.72)';
+    ctx.fill();
+  }
+  raf = requestAnimationFrame(drawCanvas);
+}
+
+initCanvas(); drawCanvas();
+window.addEventListener('resize', () => { cancelAnimationFrame(raf); initCanvas(); drawCanvas(); });
+
+/* ─── TYPEWRITER ─── */
+const words = ['Drug Design','Machine Learning','Computational Chemistry','Bioinformatics','Antimicrobial Peptides','Lipophilicity Modeling'];
+let wi=0,ci=0,del=false;
+const tw = document.getElementById('tw');
+function type() {
+  const w = words[wi];
+  if (!del) { tw.textContent = w.slice(0,++ci); if(ci===w.length){del=true;setTimeout(type,1800);return;} }
+  else        { tw.textContent = w.slice(0,--ci); if(ci===0){del=false;wi=(wi+1)%words.length;} }
+  setTimeout(type, del ? 55 : 85);
+}
+type();
+
+/* ─── SCROLL REVEAL ─── */
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('vis'); obs.unobserve(e.target); } }),
+  { threshold: 0.1 }
+);
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* ─── NAV ACTIVE SECTION ─── */
+const nb = document.getElementById('navbar');
+const secs = ['hero','research','professors','students','databases','publications','resources'];
+window.addEventListener('scroll', () => {
+  nb.classList.toggle('scrolled', window.scrollY > 20);
+  let cur = 'hero';
+  secs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 130) cur = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a =>
+    a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+});
+
+/* ─── MOBILE MENU ─── */
+const hbg = document.getElementById('hamburger');
+const mob = document.getElementById('mobMenu');
+hbg.addEventListener('click', () => { hbg.classList.toggle('open'); mob.classList.toggle('open'); });
+function closeMob() { hbg.classList.remove('open'); mob.classList.remove('open'); }
+
+/* ─── BIO EXPAND ─── */
+function toggleBio(id, btn) {
+  const b = document.getElementById(id);
+  const c = b.classList.toggle('clps');
+  btn.textContent = c ? 'Show more ↓' : 'Show less ↑';
+}
+</script>
+</body>
+</html>
