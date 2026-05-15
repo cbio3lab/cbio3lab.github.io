@@ -142,16 +142,16 @@ section:nth-child(even){background:var(--bg2)}
 .stu-desc{font-size:.84rem;color:var(--muted)}
 
   /* ─── OPEN ACCESS TOOLS ─── */
-.tools-grid {display: grid;grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));gap: 1.4rem}
-.tools-card {background: var(--surface);border: 1px solid var(--border2);border-radius: var(--r);padding: 1.75rem;display: flex;flex-direction: column;gap: .9rem;transition: all .3s;position: relative;overflow: hidden}
-.tools-card::after {content: '';position: absolute;bottom: 0;left: 0;right: 0;height: 2px;background: linear-gradient(90deg, var(--accent), var(--accent2));transform: scaleX(0);transform-origin: left;transition: transform .3s}
-.tools-card:hover {border-color: var(--border);box-shadow: 0 12px 40px rgba(0,0,0,.4)}
-.tools-card:hover::after {transform: scaleX(1)}
-.tools-icon {font-size: 1.7rem;}
-.tools-name {font-size: 1.02rem;font-weight: 700;font-family: var(--display);line-height: 1.35}
-.tools-desc {font-size: .84rem;color: var(--muted);line-height: 1.65;flex: 1}
-.tools-link {font-family: var(--mono);font-size: .74rem;color: var(--accent);border: 1px solid var(--border);border-radius: 6px;padding: .36rem .85rem;align-self: flex-start;transition: all .2s;display: inline-flex;align-items: center;gap: .35rem}
-.tools-link:hover {border-color: var(--accent);background: var(--glow)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.4rem}
+.tools-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.75rem;display:flex;flex-direction:column;gap:.9rem;transition:all .3s;position:relative;overflow:hidden}
+.tools-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.tools-card:hover{border-color:var(--border);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.tools-card:hover::after{transform:scaleX(1)}
+.tools-icon{font-size:1.7rem}
+.tools-name{font-size:1.02rem;font-weight:700;font-family:var(--display);line-height:1.35}
+.tools-desc{font-size:.84rem;color:var(--muted);line-height:1.65;flex:1}
+.tools-link{font-family:var(--mono);font-size:.74rem;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:.36rem .85rem;align-self:flex-start;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem}
+.tools-link:hover{border-color:var(--accent);background:var(--glow)}
 
 /* ─── DATABASES ─── */
 .db-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.4rem}
@@ -488,7 +488,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
         <div class="prof-body">
           <img src="images/Professors/esteban.jpg"
                alt="Esteban"
-               class="img-fluid mb-3" style="max-width: 80%; height: auto;" />
+               class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
           <div class="bio clps" id="bio-eb">Associate Professor at the School of Chemistry, UCR. Part of the CBio3 group since 2021. M.Sc. student under Prof. William Zamora investigating the influence of ion formation on lipophilicity of small organic molecules — addressing whether chemical equilibria between neutral and ionic species (carboxylates, amines, etc.) improve lipophilicity prediction calculations at different pH values.<br><br>Also collaborates on Machine Learning projects for novel lipophilicity descriptors with the University of Barcelona and Pion Inc. (UK).</div>
           <button class="exp-btn" onclick="toggleBio('bio-eb',this)">Show more ↓</button>
           <div class="awards">
@@ -569,6 +569,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
         <div class="tools-icon">🧪</div>
         <div class="tools-name">LiProS</div>
         <img src="images/tools/LiProS.png"
+          alt="LiProS"
+               class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
         <div class="tools-desc">Workflow for accurate lipophilicity profile prediction (logD vs pH) of small molecules using ML methods.</div>
         <a href="https://colab.research.google.com/drive/1w9Vkqm4kIBQPn5AeSYnIwAs6vCTd8G7u?usp=sharing" class="tools-link">Launch Tool ↗</a>
       </div>
@@ -576,6 +578,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
         <div class="tools-icon">📈</div>
         <div class="tools-name">GSESolver</div>
         <img src="images/tools/GSESolver.png"
+          alt="GSESolver"
+               class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
         <div class="tools-desc">Web server for evaluating the plausibility of using the General Solubility Equation for small molecules using ML methods.</div>
         <a href="https://colab.research.google.com/drive/1bzTD7NvdyLNfh4UF2GJ0UN-swyYTDD4P?usp=sharing" class="tools-link">Launch Tool ↗</a>
       </div>
@@ -583,6 +587,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
         <div class="tools-icon">🧬</div>
         <div class="tools-name">LiPHEX</div>
         <img src="images/tools/LiPHEX.png"
+          alt="LiPHEX"
+               class="img-fluid mb-3" style="max-width: 90%; height: auto;" />
         <div class="tools-desc">QSPR plug-and-play notebook to predict n-Hexadecane/Water logP values.</div>
         <a href="https://colab.research.google.com/drive/1wUi9Vk9BHLFIy3c_EImuPAVGdRabfhSm?usp=sharing" class="tools-link">Launch Tool ↗</a>
       </div>
