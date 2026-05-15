@@ -141,6 +141,18 @@ section:nth-child(even){background:var(--bg2)}
 .stu-name{font-weight:600;margin-bottom:.28rem}
 .stu-desc{font-size:.84rem;color:var(--muted)}
 
+  /* ─── OPEN ACCESS TOOLS ─── */
+.tools-grid {display: grid;grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));gap: 1.4rem}
+.tools-card {background: var(--surface);border: 1px solid var(--border2);border-radius: var(--r);padding: 1.75rem;display: flex;flex-direction: column;gap: .9rem;transition: all .3s;position: relative;overflow: hidden}
+.tools-card::after {content: '';position: absolute;bottom: 0;left: 0;right: 0;height: 2px;background: linear-gradient(90deg, var(--accent), var(--accent2));transform: scaleX(0);transform-origin: left;transition: transform .3s}
+.tools-card:hover {border-color: var(--border);box-shadow: 0 12px 40px rgba(0,0,0,.4)}
+.tools-card:hover::after {transform: scaleX(1)}
+.tools-icon {font-size: 1.7rem;}
+.tools-name {font-size: 1.02rem;font-weight: 700;font-family: var(--display);line-height: 1.35}
+.tools-desc {font-size: .84rem;color: var(--muted);line-height: 1.65;flex: 1}
+.tools-link {font-family: var(--mono);font-size: .74rem;color: var(--accent);border: 1px solid var(--border);border-radius: 6px;padding: .36rem .85rem;align-self: flex-start;transition: all .2s;display: inline-flex;align-items: center;gap: .35rem}
+.tools-link:hover {border-color: var(--accent);background: var(--glow)}
+
 /* ─── DATABASES ─── */
 .db-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.4rem}
 .db-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.75rem;display:flex;flex-direction:column;gap:.9rem;transition:all .3s;position:relative;overflow:hidden}
@@ -270,6 +282,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
     <li><a href="#research">Research</a></li>
     <li><a href="#professors">Professors</a></li>
     <li><a href="#students">Students</a></li>
+    <li><a href="#tools">Tools</a></li>
     <li><a href="#databases">Databases</a></li>
     <li><a href="#publications">Publications</a></li>
     <li><a href="#resources">Resources</a></li>
@@ -285,6 +298,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
   <a href="#research"     onclick="closeMob()">Research</a>
   <a href="#professors"   onclick="closeMob()">Professors</a>
   <a href="#students"     onclick="closeMob()">Students</a>
+  <a href="#tools"        onclick="closeMob()">Tools</a>
   <a href="#databases"    onclick="closeMob()">Databases</a>
   <a href="#publications" onclick="closeMob()">Publications</a>
   <a href="#resources"    onclick="closeMob()">Resources</a>
@@ -543,6 +557,39 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
   </div>
 </section>
 
+
+<!-- ═══ OPEN ACCESS TOOLS ═══ -->
+<section id="tools">
+  <div class="container">
+    <div class="sec-label">04 // Open Tools</div>
+    <h2 class="sec-title">Open Access Tools</h2>
+    <p class="sec-desc">Software and web tools developed by the CBio3 lab, freely available to the scientific community.</p>
+    <div class="tools-grid">
+      <div class="tools-card reveal">
+        <div class="tools-icon">🧪</div>
+        <div class="tools-name">LiProS</div>
+        <img src="images/tools/LiProS.png"
+        <div class="tools-desc">Workflow for accurate lipophilicity profile prediction (logD vs pH) of small molecules using ML methods.</div>
+        <a href="https://colab.research.google.com/drive/1w9Vkqm4kIBQPn5AeSYnIwAs6vCTd8G7u?usp=sharing" class="tools-link">Launch Tool ↗</a>
+      </div>
+      <div class="tools-card reveal">
+        <div class="tools-icon">📈</div>
+        <div class="tools-name">GSESolver</div>
+        <img src="images/tools/GSESolver.png"
+        <div class="tools-desc">Web server for evaluating the plausibility of using the General Solubility Equation for small molecules using ML methods.</div>
+        <a href="https://colab.research.google.com/drive/1bzTD7NvdyLNfh4UF2GJ0UN-swyYTDD4P?usp=sharing" class="tools-link">Launch Tool ↗</a>
+      </div>
+      <div class="tools-card reveal">
+        <div class="tools-icon">🧬</div>
+        <div class="tools-name">LiPHEX</div>
+        <img src="images/tools/LiPHEX.png"
+        <div class="tools-desc">QSPR plug-and-play notebook to predict n-Hexadecane/Water logP values.</div>
+        <a href="https://colab.research.google.com/drive/1wUi9Vk9BHLFIy3c_EImuPAVGdRabfhSm?usp=sharing" class="tools-link">Launch Tool ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ DATABASES ═══ -->
 <section id="databases">
   <div class="container">
@@ -663,6 +710,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border2);padding:3.5rem 
   <div class="ft-links">
     <a href="#research">Research</a>
     <a href="#professors">Professors</a>
+    <a href="#tools">Tools</a>
     <a href="#databases">Databases</a>
     <a href="#publications">Publications</a>
     <a href="#resources">Resources</a>
@@ -818,7 +866,7 @@ initCanvas(); drawCanvas();
 window.addEventListener('resize', () => { cancelAnimationFrame(raf); initCanvas(); drawCanvas(); });
 
 /* ─── TYPEWRITER ─── */
-const words = ['Drug Design','Machine Learning','Computational Chemistry','Bioinformatics','Antimicrobial Peptides','Lipophilicity Modeling'];
+const words = ['Drug Design','Machine Learning','Computational Chemistry','Bioinformatics','Computational Biology','Antimicrobial Peptides','Lipophilicity Modeling', 'Solubility Modeling'];
 let wi=0,ci=0,del=false;
 const tw = document.getElementById('tw');
 function type() {
